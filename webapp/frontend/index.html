@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LeadPulse.ai — Dashboard</title>
+  <meta name="description" content="AI-powered outbound calling and lead management platform by LeadPulse.ai."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════
+     LOGIN SCREEN
+══════════════════════════════════════════════════ -->
+<div id="login-screen" class="login-screen">
+  <div class="login-glow"></div>
+  <div class="login-card glass-card">
+    <div class="login-logo">
+      <div class="logo-icon">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+          <path d="M4 16 C4 8 12 2 16 2 C20 2 28 8 28 16 C28 24 20 30 16 30 C12 30 4 24 4 16Z" fill="url(#lg1)" opacity="0.2"/>
+          <path d="M10 16 L14 20 L22 12" stroke="url(#lg1)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <defs>
+            <linearGradient id="lg1" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#6366f1"/>
+              <stop offset="1" stop-color="#a855f7"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+      <span class="logo-text">LeadPulse<em>.ai</em></span>
+    </div>
+    <h1 class="login-title">Welcome back</h1>
+    <p class="login-subtitle">Sign in to your calling platform</p>
+    <form id="login-form">
+      <div class="form-group">
+        <label>Email address</label>
+        <input type="email" id="login-email" value="admin@leadpulse.ai" placeholder="admin@leadpulse.ai" required/>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="login-password" value="admin123" placeholder="••••••••" required/>
+      </div>
+      <div id="login-error" class="alert alert-error hidden"></div>
+      <button type="submit" class="btn btn-primary btn-full" id="login-btn">
+        <span class="btn-text">Sign In</span>
+        <div class="spinner hidden" id="login-spinner"></div>
+      </button>
+    </form>
+    <p class="login-hint">Default: admin@leadpulse.ai / admin123</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     MAIN APP
+══════════════════════════════════════════════════ -->
+<div id="app" class="app hidden">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <div class="logo-icon sm">
+          <svg width="22" height="22" viewBox="0 0 32 32" fill="none">
+            <path d="M10 16 L14 20 L22 12" stroke="url(#lg2)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <defs><linearGradient id="lg2" x1="0" y1="0" x2="32" y2="32"><stop stop-color="#6366f1"/><stop offset="1" stop-color="#a855f7"/></linearGradient></defs>
+          </svg>
+        </div>
+        <span class="logo-text sm">LeadPulse<em>.ai</em></span>
+      </div>
+      <button class="sidebar-toggle" id="sidebar-toggle" title="Toggle sidebar">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section">
+        <span class="nav-label">Main</span>
+        <a href="#" class="nav-item active" data-page="dashboard">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          <span>Dashboard</span>
+        </a>
+        <a href="#" class="nav-item" data-page="campaigns">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          <span>Campaigns</span>
+        </a>
+        <a href="#" class="nav-item" data-page="leads">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+          <span>Leads</span>
+          <span class="badge" id="nav-leads-count">0</span>
+        </a>
+        <a href="#" class="nav-item" data-page="calls">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.69A2 2 0 012 1.01h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 15.92z"/></svg>
+          <span>Call History</span>
+        </a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Configuration</span>
+        <a href="#" class="nav-item" data-page="agents">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14M12 2v2M12 20v2M2 12h2M20 12h2"/></svg>
+          <span>AI Agents</span>
+        </a>
+        <a href="#" class="nav-item" data-page="slots">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          <span>Calling Slots</span>
+        </a>
+      </div>
+      <div class="nav-section">
+        <span class="nav-label">Account</span>
+        <a href="#" class="nav-item" data-page="team" id="nav-team">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+          <span>Team</span>
+        </a>
+        <a href="#" class="nav-item" data-page="plans">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          <span>Plans & Billing</span>
+        </a>
+        <a href="#" class="nav-item" data-page="settings">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14"/></svg>
+          <span>Settings</span>
+        </a>
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-badge">
+        <div class="avatar" id="user-avatar">A</div>
+        <div class="user-info">
+          <span class="user-name" id="user-name">Admin</span>
+          <span class="user-role" id="user-role">Owner</span>
+        </div>
+      </div>
+      <button class="icon-btn" onclick="logout()" title="Sign out">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content" id="main-content">
+    <!-- TOP BAR -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="icon-btn mobile-menu-btn" id="mobile-menu-btn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <h2 class="page-title" id="page-title">Dashboard</h2>
+      </div>
+      <div class="topbar-right">
+        <div class="status-chip" id="config-status-chip">
+          <div class="status-dot green pulse"></div>
+          <span>Connected</span>
+        </div>
+        <button class="icon-btn" onclick="toggleTheme()" title="Toggle theme" id="theme-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+        </button>
+        <button class="btn btn-primary btn-sm" onclick="openTestCallModal()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.69A2 2 0 012 1.01h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 15.92z"/></svg>
+          Test Call
+        </button>
+      </div>
+    </header>
+
+    <!-- PAGE VIEWS -->
+    <div class="page-content" id="page-content">
+
+      <!-- ── DASHBOARD ── -->
+      <div class="page" id="page-dashboard">
+        <div class="stats-grid" id="stats-grid">
+          <div class="stat-card glass-card">
+            <div class="stat-icon purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
+            <div class="stat-info">
+              <span class="stat-value" id="stat-total-leads">—</span>
+              <span class="stat-label">Total Leads</span>
+            </div>
+          </div>
+          <div class="stat-card glass-card">
+            <div class="stat-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.69A2 2 0 012 1.01h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 15.92z"/></svg></div>
+            <div class="stat-info">
+              <span class="stat-value" id="stat-calls-today">—</span>
+              <span class="stat-label">Calls Today</span>
+            </div>
+          </div>
+          <div class="stat-card glass-card">
+            <div class="stat-icon green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div class="stat-info">
+              <span class="stat-value" id="stat-completed">—</span>
+              <span class="stat-label">Completed Today</span>
+            </div>
+          </div>
+          <div class="stat-card glass-card">
+            <div class="stat-icon orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+            <div class="stat-info">
+              <span class="stat-value" id="stat-campaigns">—</span>
+              <span class="stat-label">Active Campaigns</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Balance + Plan -->
+        <div class="dashboard-row">
+          <div class="glass-card balance-card">
+            <div class="balance-header">
+              <span class="balance-label">Telnyx Balance</span>
+              <span class="plan-chip" id="balance-plan">Pro</span>
+            </div>
+            <div class="balance-amount" id="balance-amount">Loading...</div>
+            <div class="balance-footer">
+              <span id="balance-plan-expires"></span>
+              <a href="#" class="link" data-page="plans">Manage plan →</a>
+            </div>
+          </div>
+
+          <!-- Mini chart placeholder -->
+          <div class="glass-card chart-card">
+            <div class="chart-header">
+              <span class="chart-title">Calls — Last 7 Days</span>
+            </div>
+            <div class="bar-chart" id="bar-chart"></div>
+          </div>
+        </div>
+
+        <!-- Recent Calls -->
+        <div class="glass-card">
+          <div class="card-header">
+            <span class="card-title">Recent Call Activity</span>
+            <a href="#" class="link" data-page="calls">View all →</a>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table" id="recent-calls-table">
+              <thead><tr><th>Contact</th><th>Phone</th><th>Direction</th><th>Status</th><th>Date</th></tr></thead>
+              <tbody id="recent-calls-body"><tr><td colspan="5" class="empty">Loading...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── CAMPAIGNS ── -->
+      <div class="page hidden" id="page-campaigns">
+        <div class="page-toolbar">
+          <div class="toolbar-left">
+            <h3 class="section-title">Campaigns</h3>
+          </div>
+          <div class="toolbar-right">
+            <button class="btn btn-primary" onclick="openCreateCampaignModal()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              New Campaign
+            </button>
+          </div>
+        </div>
+        <div id="campaigns-list" class="campaigns-grid"></div>
+      </div>
+
+      <!-- ── LEADS ── -->
+      <div class="page hidden" id="page-leads">
+        <div class="page-toolbar">
+          <div class="toolbar-left">
+            <h3 class="section-title">Lead Management</h3>
+            <div class="search-box">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" id="leads-search" placeholder="Search leads..." oninput="searchLeads(this.value)"/>
+            </div>
+            <select class="select-sm" id="leads-status-filter" onchange="filterLeads()">
+              <option value="">All Statuses</option>
+              <option value="new">New</option>
+              <option value="called">Called</option>
+              <option value="interested">Interested</option>
+              <option value="booked">Booked</option>
+              <option value="not_interested">Not Interested</option>
+            </select>
+          </div>
+          <div class="toolbar-right">
+            <button class="btn btn-ghost" onclick="openImportModal()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Import CSV
+            </button>
+            <button class="btn btn-primary" onclick="openAddLeadModal()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Add Lead
+            </button>
+          </div>
+        </div>
+        <div class="glass-card">
+          <div class="table-wrap">
+            <table class="data-table" id="leads-table">
+              <thead><tr><th><input type="checkbox" id="select-all-leads" onchange="toggleSelectAllLeads(this)"/></th><th>Name</th><th>Phone</th><th>Email</th><th>Status</th><th>Source</th><th>Attempts</th><th>Actions</th></tr></thead>
+              <tbody id="leads-body"><tr><td colspan="8" class="empty">Loading...</td></tr></tbody>
+            </table>
+          </div>
+          <div class="pagination" id="leads-pagination"></div>
+        </div>
+      </div>
+
+      <!-- ── CALL HISTORY ── -->
+      <div class="page hidden" id="page-calls">
+        <div class="page-toolbar">
+          <div class="toolbar-left">
+            <h3 class="section-title">Call History</h3>
+            <div class="search-box">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" id="calls-search" placeholder="Search calls..." oninput="searchCalls(this.value)"/>
+            </div>
+            <select class="select-sm" id="calls-status-filter" onchange="filterCalls()">
+              <option value="">All Statuses</option>
+              <option value="scheduled">Scheduled</option>
+              <option value="completed">Completed</option>
+              <option value="failed">Failed</option>
+              <option value="no_answer">No Answer</option>
+            </select>
+          </div>
+        </div>
+        <div class="glass-card">
+          <div class="table-wrap">
+            <table class="data-table" id="calls-table">
+              <thead><tr><th>Contact</th><th>Phone</th><th>Direction</th><th>Status</th><th>Outcome</th><th>Campaign</th><th>Date</th></tr></thead>
+              <tbody id="calls-body"><tr><td colspan="7" class="empty">Loading...</td></tr></tbody>
+            </table>
+          </div>
+          <div class="pagination" id="calls-pagination"></div>
+        </div>
+      </div>
+
+      <!-- ── AI AGENTS ── -->
+      <div class="page hidden" id="page-agents">
+        <div class="page-toolbar">
+          <div class="toolbar-left"><h3 class="section-title">AI Voice Agents</h3></div>
+        </div>
+        <div id="agents-list" class="agents-grid"></div>
+      </div>
+
+      <!-- ── CALLING SLOTS ── -->
+      <div class="page hidden" id="page-slots">
+        <div class="page-toolbar">
+          <div class="toolbar-left"><h3 class="section-title">Calling Time Slots</h3></div>
+          <div class="toolbar-right">
+            <button class="btn btn-primary" onclick="openAddSlotModal()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Add Slot
+            </button>
+          </div>
+        </div>
+        <div id="slots-list" class="slots-grid"></div>
+      </div>
+
+      <!-- ── TEAM ── -->
+      <div class="page hidden" id="page-team">
+        <div class="page-toolbar">
+          <div class="toolbar-left"><h3 class="section-title">Team Members</h3></div>
+          <div class="toolbar-right">
+            <button class="btn btn-primary" onclick="openInviteModal()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Invite Member
+            </button>
+          </div>
+        </div>
+        <div class="glass-card">
+          <div class="table-wrap">
+            <table class="data-table" id="team-table">
+              <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Joined</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody id="team-body"><tr><td colspan="6" class="empty">Loading...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PLANS ── -->
+      <div class="page hidden" id="page-plans">
+        <div class="page-toolbar">
+          <div class="toolbar-left"><h3 class="section-title">Plans &amp; Billing</h3></div>
+        </div>
+        <div id="plans-grid" class="plans-grid"></div>
+      </div>
+
+      <!-- ── SETTINGS ── -->
+      <div class="page hidden" id="page-settings">
+        <div class="page-toolbar">
+          <div class="toolbar-left"><h3 class="section-title">Settings</h3></div>
+        </div>
+        <div class="settings-layout">
+          <div class="glass-card settings-card">
+            <h4 class="settings-section-title">Workspace</h4>
+            <div class="form-group">
+              <label>Business Name</label>
+              <input type="text" id="settings-workspace-name" placeholder="LeadPulse"/>
+            </div>
+          </div>
+          <div class="glass-card settings-card">
+            <h4 class="settings-section-title">Telnyx Configuration</h4>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Phone Number</label>
+                <input type="text" id="settings-phone" placeholder="+12025550100" readonly/>
+              </div>
+              <div class="form-group">
+                <label>Assistant ID</label>
+                <input type="text" id="settings-assistant-id" placeholder="assistant-..." readonly/>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Batch Size</label>
+                <input type="number" id="settings-batch-size" min="1" max="10"/>
+              </div>
+              <div class="form-group">
+                <label>Batch Delay (sec)</label>
+                <input type="number" id="settings-batch-delay" min="5" max="300"/>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Allowed Countries (comma-separated)</label>
+              <input type="text" id="settings-countries" placeholder="US,IN"/>
+            </div>
+          </div>
+          <div class="glass-card settings-card">
+            <h4 class="settings-section-title">Security</h4>
+            <div class="form-group">
+              <label>Current Password</label>
+              <input type="password" id="settings-current-password"/>
+            </div>
+            <div class="form-group">
+              <label>New Password</label>
+              <input type="password" id="settings-new-password"/>
+            </div>
+            <button class="btn btn-primary" onclick="changePassword()">Update Password</button>
+          </div>
+          <div class="settings-actions">
+            <button class="btn btn-primary" onclick="saveSettings()">Save Settings</button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end page-content -->
+  </main>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     MODALS
+══════════════════════════════════════════════════ -->
+
+<!-- Test Call Modal -->
+<div class="modal-overlay hidden" id="modal-test-call">
+  <div class="modal glass-card">
+    <div class="modal-header">
+      <h3>🔔 Make a Test Call</h3>
+      <button class="icon-btn" onclick="closeModal('modal-test-call')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Contact Name</label>
+        <input type="text" id="test-call-name" placeholder="John Doe"/>
+      </div>
+      <div class="form-group">
+        <label>Phone Number <span class="hint">(E.164: +919876543210)</span></label>
+        <input type="text" id="test-call-phone" placeholder="+919876543210"/>
+      </div>
+      <div id="test-call-result" class="hidden"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-test-call')">Cancel</button>
+      <button class="btn btn-primary" onclick="submitTestCall()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.69A2 2 0 012 1.01h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 15.92z"/></svg>
+        Call Now
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Lead Modal -->
+<div class="modal-overlay hidden" id="modal-add-lead">
+  <div class="modal glass-card">
+    <div class="modal-header">
+      <h3>Add New Lead</h3>
+      <button class="icon-btn" onclick="closeModal('modal-add-lead')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label>Full Name</label><input type="text" id="lead-name" placeholder="John Doe"/></div>
+        <div class="form-group"><label>Phone *</label><input type="text" id="lead-phone" placeholder="+919876543210" required/></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Email</label><input type="email" id="lead-email" placeholder="john@example.com"/></div>
+        <div class="form-group"><label>Business Name</label><input type="text" id="lead-business" placeholder="Acme Corp"/></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Fitness Goal</label><input type="text" id="lead-goal" placeholder="Weight loss, muscle gain..."/></div>
+        <div class="form-group"><label>Preferred Time</label><input type="text" id="lead-time" placeholder="Morning, Evening..."/></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Lead Source</label>
+          <select id="lead-source">
+            <option>Instagram Ad</option><option>Facebook Ad</option><option>Website</option><option>Referral</option><option>Manual</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Status</label>
+          <select id="lead-status">
+            <option value="new">New</option><option value="called">Called</option><option value="interested">Interested</option><option value="booked">Booked</option><option value="not_interested">Not Interested</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group"><label>Notes</label><textarea id="lead-notes" placeholder="Any notes about this lead..." rows="3"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-add-lead')">Cancel</button>
+      <button class="btn btn-primary" onclick="submitAddLead()">Add Lead</button>
+    </div>
+  </div>
+</div>
+
+<!-- Import CSV Modal -->
+<div class="modal-overlay hidden" id="modal-import">
+  <div class="modal glass-card">
+    <div class="modal-header">
+      <h3>Import Leads from CSV</h3>
+      <button class="icon-btn" onclick="closeModal('modal-import')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="drop-zone" id="csv-drop-zone" onclick="document.getElementById('csv-file-input').click()">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <p>Click or drag CSV file here</p>
+        <span class="hint">Columns: name, phone, email, business_name, fitness_goal, preferred_time, lead_source</span>
+        <input type="file" id="csv-file-input" accept=".csv" class="hidden" onchange="handleCsvFile(this)"/>
+      </div>
+      <div id="csv-preview" class="hidden">
+        <p class="import-count" id="csv-count"></p>
+        <div class="table-wrap" style="max-height:200px">
+          <table class="data-table" id="csv-preview-table">
+            <thead><tr><th>Name</th><th>Phone</th><th>Email</th></tr></thead>
+            <tbody id="csv-preview-body"></tbody>
+          </table>
+        </div>
+        <div class="form-group mt-2">
+          <label>Duplicate handling</label>
+          <select id="import-dupe-policy">
+            <option value="skip">Skip duplicates</option>
+            <option value="update">Update existing</option>
+          </select>
+        </div>
+      </div>
+      <div id="import-result" class="hidden"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-import')">Cancel</button>
+      <button class="btn btn-primary hidden" id="import-btn" onclick="submitImport()">Import Leads</button>
+    </div>
+  </div>
+</div>
+
+<!-- Create Campaign Modal -->
+<div class="modal-overlay hidden" id="modal-create-campaign">
+  <div class="modal glass-card">
+    <div class="modal-header">
+      <h3>New Campaign</h3>
+      <button class="icon-btn" onclick="closeModal('modal-create-campaign')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label>Campaign Name *</label><input type="text" id="camp-name" placeholder="Spring Fitness Drive"/></div>
+      <div class="form-group"><label>Description</label><textarea id="camp-desc" rows="2" placeholder="Campaign description..."></textarea></div>
+      <div class="form-row">
+        <div class="form-group"><label>Batch Size</label><input type="number" id="camp-batch" value="2" min="1" max="10"/></div>
+        <div class="form-group"><label>Delay Between Calls (sec)</label><input type="number" id="camp-delay" value="20" min="5" max="300"/></div>
+      </div>
+      <div class="alert alert-info">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Campaign will call all leads with "New" status from your lead list.
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-create-campaign')">Cancel</button>
+      <button class="btn btn-primary" onclick="submitCreateCampaign()">Create Campaign</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Agent Modal -->
+<div class="modal-overlay hidden" id="modal-edit-agent">
+  <div class="modal modal-lg glass-card">
+    <div class="modal-header">
+      <h3>Edit AI Agent</h3>
+      <button class="icon-btn" onclick="closeModal('modal-edit-agent')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="edit-agent-id"/>
+      <div class="form-row">
+        <div class="form-group"><label>Agent Name</label><input type="text" id="edit-agent-name"/></div>
+        <div class="form-group"><label>Greeting</label><input type="text" id="edit-agent-greeting"/></div>
+      </div>
+      <div class="form-group"><label>Instructions (Prompt)</label><textarea id="edit-agent-instructions" rows="12" class="monospace"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-edit-agent')">Cancel</button>
+      <button class="btn btn-primary" onclick="submitEditAgent()">Save Agent</button>
+    </div>
+  </div>
+</div>
+
+<!-- Invite Modal -->
+<div class="modal-overlay hidden" id="modal-invite">
+  <div class="modal glass-card">
+    <div class="modal-header">
+      <h3>Invite Team Member</h3>
+      <button class="icon-btn" onclick="closeModal('modal-invite')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label>Full Name</label><input type="text" id="invite-name"/></div>
+      <div class="form-group"><label>Email</label><input type="email" id="invite-email"/></div>
+      <div class="form-group"><label>Role</label>
+        <select id="invite-role">
+          <option value="operator">Operator</option>
+          <option value="admin">Admin</option>
+          <option value="viewer">Viewer</option>
+        </select>
+      </div>
+      <div class="alert alert-info">Default password will be: <strong>Welcome@2026</strong></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-invite')">Cancel</button>
+      <button class="btn btn-primary" onclick="submitInvite()">Send Invite</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Slot Modal -->
+<div class="modal-overlay hidden" id="modal-add-slot">
+  <div class="modal glass-card">
+    <div class="modal-header">
+      <h3>Add Calling Slot</h3>
+      <button class="icon-btn" onclick="closeModal('modal-add-slot')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label>Slot Name</label><input type="text" id="slot-name" placeholder="Morning Window"/></div>
+      <div class="form-group">
+        <label>Days</label>
+        <div class="days-picker" id="days-picker">
+          <button type="button" class="day-btn active" data-day="Mon">Mon</button>
+          <button type="button" class="day-btn active" data-day="Tue">Tue</button>
+          <button type="button" class="day-btn active" data-day="Wed">Wed</button>
+          <button type="button" class="day-btn active" data-day="Thu">Thu</button>
+          <button type="button" class="day-btn active" data-day="Fri">Fri</button>
+          <button type="button" class="day-btn" data-day="Sat">Sat</button>
+          <button type="button" class="day-btn" data-day="Sun">Sun</button>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Start Time</label><input type="time" id="slot-start" value="09:00"/></div>
+        <div class="form-group"><label>End Time</label><input type="time" id="slot-end" value="18:00"/></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-add-slot')">Cancel</button>
+      <button class="btn btn-primary" onclick="submitAddSlot()">Create Slot</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast notification -->
+<div class="toast-container" id="toast-container"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
